@@ -5,21 +5,22 @@ extern crate log4rs;
 // Represent hexagons with axial coordinates.
 
 #[derive(Default)]
-struct Terrain {
+pub struct Terrain {
     resource: i32,
 }
 
 #[derive(Default)]
-struct Intersection {
+pub struct Intersection {
     building: i32,
 }
 
 #[derive(Default)]
-struct Edge {
+pub struct Edge {
     kind: i32,
 }
 
-struct Board {
+#[derive(Default)]
+pub struct Board {
     height: usize,
     width: usize,
     mem_height: usize,
@@ -74,5 +75,21 @@ impl Board {
 fn main() {
     log4rs::init_file("config/log4rs.yaml", Default::default()).unwrap();
     info!("settlers in rust");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_board_init() {
+        let mut board: Board = Default::default();
+        board.init(1, 1);
+        //assert_eq!(1, board.terrains.len());
+        //assert_eq!(6, board.intersections.len());
+        assert_eq!(2, board.vertical_edge_size);
+        assert_eq!(2, board.right_edge_size);
+        //assert_eq!(6, board.edges.len());
+    }
 }
 
