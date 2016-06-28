@@ -2,7 +2,69 @@
 extern crate log;
 extern crate log4rs;
 
-// Represent hexagons with axial coordinates.
+// Represent hexagons with axial coordinates like this
+//
+//                / \ / \ / \
+//               |0,0|0,1|0,2|
+//                \ / \ / \ / \
+//                 |1,0|1,1|1,2|
+//                  \ / \ / \ / \
+//                   |2,0|2,1|2,2|
+//                    \ / \ / \ /
+//
+// Each hex is referenced by the tuple (row, column).
+//
+// The intersections are indexed like this
+//
+//             0   1   2   3
+//              \4/ \5/ \6/ \7
+//               |   |   |   |
+//               8\C/9\D/A\E/B\F
+//                 |   |   |   |
+//                 G\K/H\L/I\M/J\N
+//                   |   |   |   |
+//                   O\ /P\ /Q\ /R\
+//                     S   T   U   V
+//
+// There are three kinds of edges: vertical, right, left.
+// They are indexed like this
+//
+// Vertical
+//             0   1   2   3
+//             |   |   |   |
+//            / \4/ \5/ \6/ \7/
+//               |   |   |   |
+//              / \8/ \9/ \A/ \B/
+//                 |   |   |   |
+//                / \C/ \D/ \E/ \F/
+//                   |   |   |   |
+//                  / \G/ \H/ \I/ \J/
+//                     |   |   |   |
+//
+// Right
+//                          
+//             |   |   |   |
+//            / \0/ \1/ \2/ \3/
+//               |   |   |   |
+//              / \4/ \5/ \6/ \7/
+//                 |   |   |   |
+//                / \8/ \9/ \A/ \B/
+//                   |   |   |   |
+//                  / \C/ \D/ \E/ \F/
+//                     |   |   |   |
+//
+// Left
+//                          
+//             |   |   |   |
+//           0/ \1/ \2/ \3/ \4/ 
+//               |   |   |   |
+//             5/ \6/ \7/ \8/ \9/
+//                 |   |   |   |
+//               A/ \B/ \C/ \D/ \E/
+//                   |   |   |   |
+//                 F/ \G/ \H/ \I/ \J/
+//                     |   |   |   |
+//
 
 #[derive(Default)]
 pub struct Terrain {
@@ -35,6 +97,9 @@ pub struct Board {
 impl Board {
     // Initialize a hexagonal grid in the shape of a rectangle.
     fn init(&mut self, height: usize, width: usize) {
+        assert!(0 < height);
+        assert!(0 < width);
+
         let mem_height = height;
         let mem_width = 1 + width + 1;
 
@@ -50,10 +115,10 @@ impl Board {
             self.intersections.push(intersection);
         }
 
-        let vertical_edge_size = height * (width + 1);
+        let vertical_edge_size = (height + 2) * (width + 1);
         // The number of edges going down from left to right.
-        let right_edge_size = (height / 2) * (2 * width + 1) + width * (1 + (height % 2));
-        let left_edge_size = right_edge_size;
+        let right_edge_size = (height + 1) * (width + 1);
+        let left_edge_size = (height + 1) * (width + 2);
         let edge_size = 
             vertical_edge_size +
             right_edge_size +
@@ -70,6 +135,13 @@ impl Board {
         self.vertical_edge_size = vertical_edge_size;
         self.right_edge_size = right_edge_size;
     }
+
+    fn get_terrain_index(&self, row: usize, column:usize) -> usize {
+        return row * self.mem_width + column;
+    }
+
+    fn get_
+
 }
 
 fn main() {
@@ -85,11 +157,8 @@ mod tests {
     fn test_board_init() {
         let mut board: Board = Default::default();
         board.init(1, 1);
-        //assert_eq!(1, board.terrains.len());
-        //assert_eq!(6, board.intersections.len());
         assert_eq!(2, board.vertical_edge_size);
         assert_eq!(2, board.right_edge_size);
-        //assert_eq!(6, board.edges.len());
     }
 }
 
